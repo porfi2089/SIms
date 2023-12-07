@@ -1,0 +1,1 @@
+time(s),altitude(m),speed(m/s),acceleration(m/s/s),body drag(N),airfoil drag(N),atm pressure(Kg/m2),air temp(K),fin deflection(°),z agnular rate(rad/s),z angle(rad),z torque(N/m2)
