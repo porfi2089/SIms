@@ -85,10 +85,9 @@ def sim_cycle():
     a_drag = .5 * atm_density * velocity * velocity * a_front_area * airfoil_cd(fin_def)
 
     if altitude < 50:
-        if 50 - altitude < 30:
-            p_drag = .5 * atm_density * velocity * velocity * chute_area * chute_cd * (100-altitude)/30
-        else:
-            p_drag = .5 * atm_density * velocity * velocity * chute_area * chute_cd
+        p_drag = .5 * atm_density * velocity * velocity * full_chute_area * chute_cd_full
+    elif altitude < 100:
+        p_drag = .5 * atm_density * velocity * velocity * semi_chute_area * chute_cd_semi
     else:
         p_drag = 0
 
@@ -134,7 +133,7 @@ while time/step < max_cycles and altitude > 0:
     # fin_def = packet[0]
     # chute_flag = packet[1]
     ie = ie + z_ang_rate
-    control = (PID(0.25, 0.01, 0.6, z_ang_rate/200, le, ie, step)/100)
+    control = (PID(0.25, 0.01, 0.6, z_ang_rate/200, le, ie, step))/((velocity**2+0.00000001))
     fin_def = sorted([-0.2, control, 0.2])[1]
     fin_def = fin_def
     sim_cycle()
@@ -145,6 +144,7 @@ while time/step < max_cycles and altitude > 0:
 # coms.close()
 print("max speed: " + str(max_speed))
 print("flight time: " + str(time))
+print("simulation cycles: " + str(round(time/step)))
 
 
 

@@ -3,24 +3,26 @@ import numpy as np
 
 # simulation settings
 max_cycles = 50000  # how many times steps the simulation will run for
-step = .02  # how much time will advance every cycle
+step = .001  # how much time will advance every cycle
 output_file = 'test.csv'  # file name
 output_folder = 'test'
 
 # vehicle statistics
-mass = 2  # kg
+mass = 0.315  # kg
 MMI = 0.005  # mass moment of inertia (Kg/m2)
 body_ca = 0.005  # cross-sectional area of body (m2)
-body_cd = 0.5  # coefficient of drag of body
+body_cd = 0.6  # coefficient of drag of body
 TGL = 298.15  # temperature at ground level (K)
 fin_amount = 4  # fin amount
 fin_d_center = 0.065  # m from center (m)
 afoil_len = 0.05  # m
 afoil_front_width = 0.01  # m
 afoil_side_width = 0.05  # m
-chute_area = 0.2  # m
+semi_chute_area = 0.05  # m
+full_chute_area = 0.2  # m
 chute_deploy_time = 1  # s
-chute_cd = 0.8  # coefficient of drag
+chute_cd_semi = 0.8  # coefficient of drag
+chute_cd_full = 1.2  # coefficient of drag
 
 
 def airfoil_cd(A2):  # calculate coefficient of drag of the airfoil
@@ -54,7 +56,7 @@ def airfoil_cl(A3):  # calculate coefficient of lift of the airfoil
 
 # variables
 time = 0  # time in S
-altitude = 25000  # meters
+altitude = 400 # meters
 velocity = 0  # m/s
 mach_num = 0;
 acceleration = 0  # m/s2
