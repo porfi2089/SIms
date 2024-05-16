@@ -1,5 +1,5 @@
 import csv
-import math
+from scipy.spatial.transform import Rotation as R
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random as rnd
@@ -40,17 +40,15 @@ def write_to_csv(filename: str, _time: float, _pos: np.ndarray, _vel: np.ndarray
                 'rot_velz': _rot_vel[2]
              })
 
-create_csv(output_file)
-
 def processAcc(pos: np.ndarray, vel: np.ndarray, acc: np.ndarray) -> np.ndarray:
     vel = vel + acc
     pos = pos + vel
     return np.array([pos, vel])
 
-def forceToAcc(Wforces: np.ndarray, mas: float):
+def forceToAcc(Wforces: np.ndarray, mas: float) -> np.ndarray:
     return Wforces / mass
 
-def globalizeForce(force: ph.Force) -> np.ndarray:
+def torqueFromForce(force: ph.Force) -> np.ndarray:
     _trq = np.zeros((1,3))
     mag = force.mag
     Lpos = force.Lpos
@@ -61,6 +59,10 @@ def globalizeForce(force: ph.Force) -> np.ndarray:
 
     return _trq
 
+def globalizeForces(forces:np.ndarray[ph.Force], _rotmat: R):
+    for F in forces:
+        
+
 def combineLinealForces(_forces: np.ndarray[ph.Force]) -> ph.Force:
     """combines multiple forces into one"""
     tot_forces = np.zeros((1,3))
@@ -68,4 +70,30 @@ def combineLinealForces(_forces: np.ndarray[ph.Force]) -> ph.Force:
         tot_forces += f.mag
     
     return ph.Force(tot_forces)
+
+def getTotTorque(_forces: np.ndarray[ph.Force]) -> np.ndarray[float]:
+    tot_trq = np.zeros((1,3))
+    for f in _forces:
+        tot_trq += torqueFromForce()
+    return tot_trq
+
+pos = np.zeros((1,3))
+vel = np.zeros((1,3))
+acc = np.zeros((1,3))
+ang = R.from_euler('XYZ', [0,0,0], degrees=True)
+forces:np.ndarray[ph.Force]
+
+def Cycle():
+    global time
+    global forces
+    time += step
+
+    
+    rotmat = ang.as_matrix()
+    Wforces = forces * rotmat
+
+    # final 
+    acc = forceToAcc(Wforces, mass)
+    pos, vel = processAcc(pos, vel, acc)
+
 
