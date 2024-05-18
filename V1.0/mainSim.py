@@ -59,9 +59,13 @@ def torqueFromForce(force: ph.Force) -> np.ndarray:
 
     return _trq
 
-def globalizeForces(forces:np.ndarray[ph.Force], _rotmat: R):
+def globalizeForces(forces:np.ndarray[ph.Force], _rotmat: R) -> np.ndarray[ph.Force]:
+    """globalizes forces to the world frame.\n Taking in the rotation matrix of the object and he forces that are to be rotated"""
+    _Wforces = np.array([])
     for F in forces:
-        
+        F.mag = F.mag * _rotmat
+        _Wforces.append(F)
+    return _Wforces
 
 def combineLinealForces(_forces: np.ndarray[ph.Force]) -> ph.Force:
     """combines multiple forces into one"""
@@ -77,20 +81,46 @@ def getTotTorque(_forces: np.ndarray[ph.Force]) -> np.ndarray[float]:
         tot_trq += torqueFromForce()
     return tot_trq
 
+def getEnviroment(TGL: float, alt:float) -> np.ndarray[float, float, float, float]:
+    '''calculates the enviroment of the object'''
+    air_temp = TGL - 0.0098 * alt
+    atm_pressure = 101325 * pow(1 - ((0.0098 * alt) / 288.15), (9.807 * 0.0289644) / (8.3144598 * 0.0098))
+    atm_density = (atm_pressure * 0.0289644) / (8.3144598 * air_temp)
+    SoS = math.sqrt(1.4*(atm_pressure/atm_density))
+    return np.array([air_temp, atm_pressure, atm_density, SoS])
+
 pos = np.zeros((1,3))
 vel = np.zeros((1,3))
 acc = np.zeros((1,3))
 ang = R.from_euler('XYZ', [0,0,0], degrees=True)
+ang_vel = np.zeros((1,3))
+ang_acc = np.zeros((1,3))
 forces:np.ndarray[ph.Force]
 
 def Cycle():
     global time
     global forces
+    global pos
+    global vel
+    global acc
+    global ang
     time += step
 
+    # get enviroment
+    air_temp, atm_pressure, atm_density, SoS = getEnviroment(TGL, pos[2])
+
+    # get forces
     
+
+    # get torques
+    torque = getTotTorque(forces)
+    ang_acc = torque / MMI
+    ang_vel = ang_vel + ang_acc
+    ang = ang * R.from_euler('XYZ', ang_vel, degrees=True)
+
+    # globalize forces
     rotmat = ang.as_matrix()
-    Wforces = forces * rotmat
+    Wforces = globalizeForces(forces, rotmat)
 
     # final 
     acc = forceToAcc(Wforces, mass)

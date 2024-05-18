@@ -122,9 +122,6 @@ def sim_cycle():
     if max_speed < abs(velocity):
         max_speed = abs(velocity)
 
-
-# coms = serial.Serial('com6', 115200)
-
 # coms.write()
 le = 0
 ie = 0

@@ -5,7 +5,7 @@ import numpy as np
 max_cycles = 50000  # how many times steps the simulation will run for
 step = .001  # how much time will advance every cycle
 output_file = 'test.csv'  # file name
-output_folder = 'test'
+output_folder = 'V0.2/test'
 
 # vehicle statistics
 mass = 0.315  # kg
